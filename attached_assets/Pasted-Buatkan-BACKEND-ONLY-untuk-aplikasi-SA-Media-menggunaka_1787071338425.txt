@@ -1,0 +1,121 @@
+Buatkan BACKEND ONLY untuk aplikasi SA Media menggunakan Node.js + Express.
+
+Jangan membuat frontend, dashboard, React, atau UI. Fokus hanya pada REST API backend.
+
+Backend harus terhubung ke project Supabase saya menggunakan environment variables:
+
+SUPABASE_URL
+SUPABASE_SECRET_KEY
+
+Database Supabase saya SUDAH ADA dan memiliki tabel:
+
+creators
+products
+contents
+deliveries
+conversations
+knowledge
+
+Supabase Storage saya SUDAH ADA dengan bucket:
+
+videos
+
+Buat struktur project yang rapi:
+
+src/
+  server.js
+  routes/
+    products.js
+    contents.js
+    upload.js
+  services/
+    supabase.js
+
+Fitur yang harus dibuat:
+
+1. GET /api/health
+Mengembalikan:
+{
+  "success": true,
+  "message": "SA Media backend is running"
+}
+
+2. GET /api/products
+Mengambil daftar produk dari tabel public.products.
+
+3. GET /api/contents
+Mengambil daftar konten dari public.contents dan informasi produk terkait.
+
+4. POST /api/upload-video
+Menerima file video melalui multipart/form-data dengan field:
+video
+
+Upload video tersebut ke Supabase Storage bucket "videos".
+
+Setelah upload berhasil, kembalikan informasi path/file URL yang dapat digunakan oleh aplikasi.
+
+5. POST /api/contents
+Menerima JSON:
+
+{
+  "title": "...",
+  "video_url": "...",
+  "caption": "...",
+  "hashtags": "...",
+  "product_id": "...",
+  "scheduled_at": "...",
+  "status": "scheduled"
+}
+
+Kemudian insert ke public.contents.
+
+6. GET /api/creators
+Mengambil daftar creator dari public.creators.
+
+7. POST /api/creators
+Membuat creator baru dengan:
+name
+whatsapp_number
+status
+level
+
+Keamanan:
+
+- SUPABASE_SECRET_KEY hanya boleh digunakan di backend.
+- Jangan pernah mengirim secret key ke client.
+- Jangan hardcode API key.
+- Gunakan process.env.
+- Jangan membuat file yang berisi secret.
+- Tambahkan .gitignore untuk .env.
+
+Upload:
+
+- Validasi bahwa file yang diterima adalah video.
+- Berikan nama file unik agar tidak bentrok.
+- Jangan menghapus file lama.
+- Tangani error upload dengan jelas.
+
+CORS:
+Aktifkan CORS untuk sementara agar frontend Vercel nanti dapat mengakses backend.
+
+Tambahkan npm scripts:
+
+npm start
+npm run dev
+
+Gunakan nodemon untuk development.
+
+Tambahkan README.md yang menjelaskan:
+- cara menjalankan lokal
+- environment variables yang dibutuhkan
+- daftar endpoint
+- contoh request
+
+Jangan mengubah atau menghapus tabel Supabase yang sudah ada.
+
+Jangan membuat SQL migration baru.
+
+Setelah selesai, pastikan project dapat dijalankan dengan:
+
+npm install
+npm start
