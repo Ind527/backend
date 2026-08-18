@@ -10,27 +10,235 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Product operations
+  - name: contents
+    description: Content operations
+  - name: creators
+    description: Creator operations
+  - name: upload
+    description: Video upload operations
 paths:
-  /healthz:
+  /health:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthStatus"
+                $ref: "#/components/schemas/HealthResponse"
+  /healthz:
+    get:
+      operationId: healthCheckLegacy
+      tags: [health]
+      summary: Legacy health check alias
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List products
+      responses:
+        "200":
+          description: Product rows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RowsResponse"
+  /contents:
+    get:
+      operationId: listContents
+      tags: [contents]
+      summary: List contents with related products
+      responses:
+        "200":
+          description: Content rows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RowsResponse"
+    post:
+      operationId: createContent
+      tags: [contents]
+      summary: Create content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateContentRequest"
+      responses:
+        "201":
+          description: Created content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RowResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /creators:
+    get:
+      operationId: listCreators
+      tags: [creators]
+      summary: List creators
+      responses:
+        "200":
+          description: Creator rows
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RowsResponse"
+    post:
+      operationId: createCreator
+      tags: [creators]
+      summary: Create creator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCreatorRequest"
+      responses:
+        "201":
+          description: Created creator
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RowResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /upload-video:
+    post:
+      operationId: uploadVideo
+      tags: [upload]
+      summary: Upload a video to Supabase Storage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadVideoRequest"
+      responses:
+        "201":
+          description: Uploaded video metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
 components:
   schemas:
-    HealthStatus:
+    HealthResponse:
       type: object
       properties:
-        status:
+        success:
+          type: boolean
+        message:
           type: string
       required:
-        - status
+        - success
+        - message
+    Row:
+      type: object
+      additionalProperties: true
+    RowsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Row"
+      required: [success, data]
+    RowResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Row"
+      required: [success, data]
+    CreateContentRequest:
+      type: object
+      required: [title, video_url, status]
+      properties:
+        title:
+          type: string
+        video_url:
+          type: string
+        caption:
+          type: string
+        hashtags:
+          type: string
+        product_id:
+          type: string
+        scheduled_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+    CreateCreatorRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        whatsapp_number:
+          type: string
+        status:
+          type: string
+        level:
+          type: string
+    UploadResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            path:
+              type: string
+            fileName:
+              type: string
+            mimeType:
+              type: string
+            size:
+              type: number
+            publicUrl:
+              type: string
+          required: [path, fileName, mimeType, size, publicUrl]
+      required: [success, data]
+    UploadVideoRequest:
+      type: object
+      required: [video]
+      properties:
+        video:
+          type: string
+          format: binary
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+            required: [success, error]
 

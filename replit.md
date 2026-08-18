@@ -1,15 +1,16 @@
-# [Project name]
+# SA Media Backend
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+REST API backend untuk mengelola produk, konten, creator, dan upload video SA Media melalui Supabase.
 
 ## Run & Operate
 
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `npm start` — run the API server from `artifacts/api-server` after dependencies are installed
+- `npm run dev` — build and run the API server in development mode from `artifacts/api-server`
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
 
 ## Stack
 
@@ -22,23 +23,31 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/api-server/src/services/supabase.ts` — server-only Supabase client
+- `artifacts/api-server/src/routes/` — health, products, contents, creators, and video upload routes
+- `artifacts/api-server/README.md` — local setup, environment variables, endpoint list, and curl examples
+- `lib/api-spec/openapi.yaml` — API contract source of truth
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Supabase is accessed only from the Express server with `SUPABASE_SECRET_KEY`; the key is never exposed to API responses.
+- Existing Supabase tables and Storage bucket are consumed as-is; this project does not create migrations.
+- Video uploads use in-memory multipart handling, unique Storage paths, and `upsert: false` so previous files are retained.
+- The API remains under the existing `/api` proxy path and keeps `/api/healthz` as a workflow-compatible alias.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+SA Media's backend exposes REST endpoints for reading products, reading and creating scheduled content, managing creators, and uploading video files to Supabase Storage.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Backend only; do not add frontend, dashboard, React, or UI.
+- Do not alter existing Supabase tables or add SQL migrations.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `SUPABASE_SECRET_KEY` must remain a Replit Secret or server environment variable. Never put it in `.env` committed to source control.
+- `publicUrl` from the upload response is directly usable only when the Supabase `videos` bucket is public; the response always includes the Storage path as well.
 
 ## Pointers
 

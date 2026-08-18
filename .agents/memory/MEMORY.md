@@ -1,0 +1,1 @@
+- [Orval multipart schemas](orval-multipart-schemas.md) — named multipart request schemas avoid duplicate Zod exports in this workspace.
