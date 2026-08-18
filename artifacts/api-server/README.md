@@ -11,6 +11,15 @@ pnpm install
 pnpm --filter @workspace/api-server run dev
 ```
 
+The package also supports the requested npm commands when run from `artifacts/api-server`:
+
+```bash
+npm install
+npm start
+```
+
+`npm start` runs `node src/server.js`. That entry point uses the existing TypeScript server and builds it automatically when the bundled output is missing. `npm run dev` uses nodemon with the same entry point.
+
 Untuk menjalankan hasil build:
 
 ```bash

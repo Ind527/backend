@@ -1,1 +1,2 @@
 - [Orval multipart schemas](orval-multipart-schemas.md) — named multipart request schemas avoid duplicate Zod exports in this workspace.
+- [Standalone npm backend](standalone-npm-backend.md) — standalone npm installs need npm-compatible dependency metadata and local lifecycle settings.
